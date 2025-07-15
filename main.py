@@ -7,7 +7,7 @@ from qdrant_client import QdrantClient
 app = FastAPI()
 
 # Load Qdrant credentials from environment variables
-qdrant_url = os.environ["https://6103c076-8f1b-4be2-85fb-190b54762996.europe-west3-0.gcp.cloud.qdrant.io/"]
+qdrant_url = os.environ["QDRANT_URL"]
 qdrant_api_key = os.environ["QDRANT_API_KEY"]
 
 # Setup Qdrant
