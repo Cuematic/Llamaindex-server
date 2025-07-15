@@ -1,5 +1,15 @@
-fastapi
-uvicorn
-llama-index
-llama-index-vector-stores-qdrant
-qdrant-client
+# Web API server
+fastapi==0.116.1
+uvicorn==0.35.0
+
+# LlamaIndex with Hugging Face support (no OpenAI)
+llama-index[embeddings-huggingface]==0.10.20
+llama-index-vector-stores-qdrant==0.6.1
+qdrant-client==1.14.3
+
+# Hugging Face models and sentence transformer
+transformers==4.43.1
+sentence-transformers==2.7.0
+
+# Optional but useful
+python-dotenv==1.0.1
