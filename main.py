@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Request
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
 from llama_index.vector_stores.qdrant import QdrantVectorStore
@@ -5,11 +6,16 @@ from qdrant_client import QdrantClient
 
 app = FastAPI()
 
+# Load Qdrant credentials from environment variables
+qdrant_url = os.environ["https://6103c076-8f1b-4be2-85fb-190b54762996.europe-west3-0.gcp.cloud.qdrant.io/"]
+qdrant_api_key = os.environ["QDRANT_API_KEY"]
+
 # Setup Qdrant
 qdrant = QdrantClient(
-    url="https://YOUR_QDRANT_URL",
-    api_key="YOUR_QDRANT_API_KEY"
+    url=qdrant_url,
+    api_key=qdrant_api_key
 )
+
 documents = SimpleDirectoryReader("data").load_data()
 vector_store = QdrantVectorStore(client=qdrant, collection_name="regulations")
 index = VectorStoreIndex.from_documents(documents, vector_store=vector_store)
