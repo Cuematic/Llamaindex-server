@@ -1,5 +1,6 @@
-fastapi==0.103.0
-uvicorn==0.23.2
-llama-index==0.8.70
+fastapi
+uvicorn
+llama-index==0.8.69
 llama-index-vector-stores-qdrant==0.1.4
-qdrant-client==1.3.0
+llama-index-embeddings-huggingface==0.1.4
+qdrant-client
