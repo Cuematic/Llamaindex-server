@@ -1,19 +1,25 @@
-import os
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
+import os
 
 app = FastAPI()
 
-# Load Qdrant credentials from environment variables
-qdrant_url = os.environ["QDRANT_URL"]
-qdrant_api_key = os.environ["QDRANT_API_KEY"]
+# 👇 Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Consider restricting this to specific domains in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# Setup Qdrant
+# Qdrant setup
 qdrant = QdrantClient(
-    url=qdrant_url,
-    api_key=qdrant_api_key
+    url=os.environ["QDRANT_URL"],
+    api_key=os.environ["QDRANT_API_KEY"]
 )
 
 documents = SimpleDirectoryReader("data").load_data()
