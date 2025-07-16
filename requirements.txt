@@ -1,6 +1,18 @@
-fastapi
-uvicorn
-llama-index
-llama-index-vector-stores-qdrant
-qdrant-client
+# Core requirements
+fastapi==0.109.2
+uvicorn==0.27.0
+python-dotenv==1.0.1
 
+# LlamaIndex (modern pinned versions)
+llama-index-core==0.10.36
+llama-index-vector-stores-qdrant==0.6.1
+llama-index-embeddings-huggingface==0.1.6
+
+# Qdrant and embeddings
+qdrant-client==1.8.2
+sentence-transformers==2.7.0
+transformers==4.41.2
+
+# PyTorch (CPU-only for Render compatibility)
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.2.2
