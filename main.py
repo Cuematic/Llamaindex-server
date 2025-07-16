@@ -5,29 +5,46 @@ from llama_index.core.settings import Settings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
-import uvicorn
 
-# Optional: Set up HuggingFace local embedding model instead of OpenAI
-Settings.embed_model = HuggingFaceEmbedding(model_name="sentence-transformers/all-MiniLM-L6-v2")
-
-# Load your documents
-documents = SimpleDirectoryReader("data").load_data()
-
-# Set up Qdrant vector store
-qdrant_client = QdrantClient(":memory:")  # For demo; replace with actual Qdrant URL or local instance
-vector_store = QdrantVectorStore(client=qdrant_client, collection_name="demo_collection")
-
-# Build index
-index = VectorStoreIndex.from_documents(documents, vector_store=vector_store)
-
-# Create FastAPI app
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"message": "LlamaIndex server is running without OpenAI 🎉"}
+# Initialize at startup (not module level)
+@app.on_event("startup")
+async def startup_event():
+    # Local embedding model
+    Settings.embed_model = HuggingFaceEmbedding(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
+    
+    # Load documents - ensure 'data' directory exists in Render
+    if not os.path.exists("data"):
+        os.makedirs("data")
+        print("Warning: 'data' directory was empty")
+    
+    global index  # Make available app-wide
+    documents = SimpleDirectoryReader("data").load_data()
+    
+    # Use disk persistence for Render's ephemeral storage
+    qdrant_client = QdrantClient(path="./qdrant_data")  # Local storage
+    vector_store = QdrantVectorStore(
+        client=qdrant_client, 
+        collection_name="demo_collection"
+    )
+    index = VectorStoreIndex.from_documents(
+        documents, 
+        vector_store=vector_store,
+        show_progress=True
+    )
 
-# Run with dynamic port for Render
+@app.get("/")
+def health_check():
+    return {
+        "status": "running",
+        "qdrant": "local",
+        "embedding": "all-MiniLM-L6-v2"
+    }
+
+# Only for local testing
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))  # Render provides PORT
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
