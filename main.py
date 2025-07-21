@@ -1,33 +1,63 @@
 import os
 from fastapi import FastAPI
-from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
-from llama_index.core.settings import Settings
+from fastapi.middleware.cors import CORSMiddleware
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, Settings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
 import uvicorn
 
-# Optional: Set up HuggingFace local embedding model instead of OpenAI
-Settings.embed_model = HuggingFaceEmbedding(model_name="sentence-transformers/all-MiniLM-L6-v2")
-
-# Load your documents
-documents = SimpleDirectoryReader("data").load_data()
-
-# Set up Qdrant vector store
-qdrant_client = QdrantClient(":memory:")  # For demo; replace with actual Qdrant URL or local instance
-vector_store = QdrantVectorStore(client=qdrant_client, collection_name="demo_collection")
-
-# Build index
-index = VectorStoreIndex.from_documents(documents, vector_store=vector_store)
-
-# Create FastAPI app
+# Initialize FastAPI
 app = FastAPI()
 
+# Configure CORS (adjust for production)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Initialize components
+def initialize_components():
+    # Setup embedding model
+    Settings.embed_model = HuggingFaceEmbedding(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
+    
+    # Initialize Qdrant (in-memory for demo)
+    qdrant_client = QdrantClient(":memory:")
+    vector_store = QdrantVectorStore(
+        client=qdrant_client, 
+        collection_name="demo_collection"
+    )
+    
+    # Load documents (create 'data' folder in your project)
+    documents = SimpleDirectoryReader("data").load_data()
+    
+    # Create index
+    index = VectorStoreIndex.from_documents(
+        documents, 
+        vector_store=vector_store
+    )
+    
+    return index
+
+# Initialize on startup
+index = initialize_components()
+
+# API Endpoints
 @app.get("/")
-def read_root():
-    return {"message": "LlamaIndex server is running without OpenAI 🎉"}
+async def health_check():
+    return {"status": "healthy", "message": "LlamaIndex Qdrant server running"}
+
+@app.get("/query")
+async def query_index(query: str):
+    query_engine = index.as_query_engine()
+    response = query_engine.query(query)
+    return {"response": str(response)}
 
 # Run with dynamic port for Render
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))  # Render provides PORT
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
