@@ -3,3 +3,11 @@ uvicorn
 llama-index
 llama-index-vector-stores-qdrant
 qdrant-client
+fastapi>=0.95.0
+uvicorn>=0.21.0
+llama-index-core>=0.10.0
+llama-index-embeddings-huggingface>=0.1.0
+llama-index-readers-file>=0.1.0
+qdrant-client>=1.6.0
+sentence-transformers>=2.2.2
+python-multipart  # For file uploads
