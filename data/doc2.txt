@@ -1,4 +1,0 @@
-Title: General Data Protection Regulation (GDPR)
-Article 5(1): Personal data shall be processed lawfully, fairly, and transparently.
-Article 32: The controller and the processor shall implement appropriate technical and organizational measures to ensure data security.
-Article 15: Data subjects have the right to access their data and information about its processing.
