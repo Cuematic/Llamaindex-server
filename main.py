@@ -10,8 +10,8 @@ app = FastAPI()
 async def startup():
     # 1. Initialize Qdrant first (smallest memory footprint)
     app.state.qdrant = QdrantClient(
-        url=os.getenv("QDRANT_URL"),
-        api_key=os.getenv("QDRANT_API_KEY"),
+        url=os.getenv("https://6103c076-8f1b-4be2-85fb-190b54762996.europe-west3-0.gcp.cloud.qdrant.io/"),
+        api_key=os.getenv("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.sVHHcIeSe4CaJcv7ybS5zYEEJ2_gNIeHwBerHnu3pDU"),
         prefer_grpc=True  # More efficient
     )
     
