@@ -1,11 +1,6 @@
-fastapi
-uvicorn
-llama-index
-llama-index-vector-stores-qdrant
-qdrant-client
 fastapi==0.109.1
 uvicorn==0.27.0
 llama-index-core==0.10.22
 llama-index-embeddings-huggingface==0.1.5
-qdrant-client==1.8.2
 sentence-transformers==2.6.1
+python-multipart==0.0.9
