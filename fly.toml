@@ -1,0 +1,10 @@
+# fly.toml
+app = "your-app-name"
+primary_region = "iad"  # Virginia
+
+[env]
+PORT = "8080"  # Fly.io uses 8080 by default
+
+[http_service]
+  internal_port = 8080
+  force_https = true
